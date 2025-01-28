@@ -1,12 +1,12 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { randomCell } from '../utils/empty-init';
+import { Cat } from '../components/cat';
+import { styles } from '../styles/styles';
 
 export default function Index() {
-  const isPressed = useSharedValue(false);
-  const offset = useSharedValue(0);
   const rows = 5;
   const renderPyramid = () => {
     const pyramid = [];
@@ -26,7 +26,7 @@ export default function Index() {
         }
         row.push(
           <View key={j} style={styles.cell}>
-          <View style={styles.cat}></View>
+            <Cat />
           </View>
         );
       }
@@ -47,33 +47,3 @@ export default function Index() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  row: {
-    flexDirection: 'row',
-  },
-  cell: {
-    margin: 5,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: 'black',
-  },
-  text: {
-    fontSize: 20,
-  },
-  empty: {
-    width: 100,
-    height: 100,
-  },
-  cat: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'blue',
-    alignSelf: 'center',
-  }
-});
