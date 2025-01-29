@@ -1,49 +1,54 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView } from 'react-native';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import { randomCell } from '../utils/empty-init';
-import { Cat } from '../components/cat';
-import { styles } from '../styles/styles';
+import Board from '../components/board';
 
-export default function Index() {
-  const rows = 5;
-  const renderPyramid = () => {
-    const pyramid = [];
-    var emptyCells = [];
-    var cell = randomCell(rows);
-    emptyCells.push(cell);
-    for (let i = 0; i < rows; i++) {
-      const row = [];
-      for (let j = 0; j < i + 1; j++) {
-        if ( emptyCells.some(cell => cell.row === i && cell.cell === j) ) {
-          row.push(
-            <View key={j} style={styles.cell}>
-            <View style={styles.empty}></View>
-            </View>
-          );
-          continue;
-        }
-        row.push(
-          <View key={j} style={styles.cell}>
-            <Cat />
-          </View>
-        );
-      }
-      pyramid.push(
-      <View key={i} style={styles.row}>
-        {row}
-      </View>
-      );
-    }
-    return pyramid;
-  }
+const App = () => {
+  const board = new Board(5); // Example with 5 rows
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
     <ScrollView contentContainerStyle={styles.container}>
-      {renderPyramid()}
+      {board.cells.map((row, rowIndex) => (
+        <View key={rowIndex} style={styles.row}>
+          {row.map((cell, cellIndex) => (
+            <View
+              key={cellIndex}
+              style={[
+                styles.cell,
+                cell.isEmpty ? styles.emptyCell : styles.filledCell,
+              ]}
+            >
+              <Text>{cell.isEmpty ? 'Empty' : 'Filled'}</Text>
+            </View>
+          ))}
+        </View>
+      ))}
     </ScrollView>
-    </GestureHandlerRootView>
   );
-}
+};
 
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  cell: {
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'black',
+  },
+  emptyCell: {
+    backgroundColor: 'lightgray',
+  },
+  filledCell: {
+    backgroundColor: 'blue',
+  },
+});
+
+export default App;
