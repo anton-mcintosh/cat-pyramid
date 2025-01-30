@@ -15,6 +15,16 @@ class Cell {
     this.isEmpty = isEmpty;
   }
 
+  getCenter(cellSize) {
+    return {
+      x: this.col * cellSize + cellSize / 2,
+      y: this.row * cellSize + cellSize /2
+    };
+  }
+  static fromPosition(row: number, col: number): Cell {
+    return new Cell(row, col);
+  }
+
 }
 
 class Board {

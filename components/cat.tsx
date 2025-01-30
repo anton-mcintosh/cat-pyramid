@@ -1,7 +1,9 @@
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { useContext } from 'react';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS } from 'react-native-reanimated';
 import { styles } from '../styles/styles';
 import { Cell } from '../components/board';
+import { GameContext } from '../app/index';
 
 class Cat {
   location: Cell;
@@ -20,11 +22,26 @@ class Cat {
     this.neighbors = newNeighbors;
   }
 }
-export default Cat;
 
-export function CatComponent({ cat }: { cat: Cat }) {
+interface CatComponentProps {
+  cat: Cat;
+  cellSize: number;
+  onMove?: (from: Cell, to: Cell) => void;
+}
+
+export function CatComponent({ cat, cellSize, onMove }: CatComponentProps) {
   const isPressed = useSharedValue(false);
   const offset = useSharedValue({ x: 0, y: 0 });
+  const start = useSharedValue({ x: 0, y: 0});
+
+  const { setCoordinates } = useContext(GameContext);
+
+
+  const initialPosition = cat.location.getCenter(cellSize);
+  offset.value = {
+    x: initialPosition.x - cellSize / 2,
+    y: initialPosition.y - cellSize / 2
+  };
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -37,35 +54,49 @@ export function CatComponent({ cat }: { cat: Cat }) {
     };
   });
 
-  const start = useSharedValue({ x: 0, y: 0 });
-  const cellSize = 125; // Assuming each cell is 125x125 pixels, adjust as needed
+  const updateCatLocation = (newX: number, newY: number) => {
+    const row = Math.floor(newY / cellSize);
+    const col = Math.floor(newX / cellSize);
+
+    const centerPosition = {
+    x: col * cellSize + cellSize / 2,
+    y: row * cellSize + cellSize / 2
+  };
+
+    offset.value = {
+      x: centerPosition.x - cellSize / 2,
+      y: centerPosition.y - cellSize / 2
+    };
+  }
 
   const gesture = Gesture.Pan()
     .onBegin(() => {
+      console.log(cat.location);
       isPressed.value = true;
-    })
+  })
     .onUpdate((e) => {
+      console.log("updating");
       offset.value = {
         x: e.translationX + start.value.x,
         y: e.translationY + start.value.y,
-      };
-    })
+    };
+  })
     .onEnd(() => {
-      start.value = {
-        x: offset.value.x,
-        y: offset.value.y,
-      };
-    })
+      const finalX = offset.value.x + cellSize / 2;
+      const finalY = offset.value.y + cellSize / 2
+      runOnJS(updateCatLocation)(finalX, finalY);
+      setCoordinates({ x: finalX, y: finalY });
+  })
     .onFinalize(() => {
       isPressed.value = false;
-      cat.updateLocation(/* new location based on offset.value */);
-    });
+  });
 
   return (
     <GestureDetector gesture={gesture}>
       <Animated.View style={[styles.cat, animatedStyle]}>
-        {/* Render additional information about the cat if needed */}
       </Animated.View>
     </GestureDetector>
   );
 }
+
+export default Cat;
