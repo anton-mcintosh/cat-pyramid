@@ -18,9 +18,9 @@ export const styles = StyleSheet.create({
   text: {
     fontSize: 20,
   },
-  empty: {
-    width: 100,
-    height: 100,
+  emptyCell: {
+    width: 125,
+    height: 125,
   },
   cat: {
     width: 100,

@@ -1,10 +1,13 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import Board from '../components/board';
+import { Cat, CatComponent } from '../components/cat';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { styles } from '../styles/styles';
 
 const App = () => {
   const board = new Board(5); // Example with 5 rows
-
+  const cats = board.createCats();
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {board.cells.map((row, rowIndex) => (
@@ -14,10 +17,11 @@ const App = () => {
               key={cellIndex}
               style={[
                 styles.cell,
-                cell.isEmpty ? styles.emptyCell : styles.filledCell,
+                cell.isEmpty ? styles.emptyCell : styles.cell,
               ]}
             >
-              <Text>{cell.isEmpty ? 'Empty' : 'Filled'}</Text>
+              {cell.isEmpty ? null : <CatComponent cat={cats.
+              find(cat => cat.location.row === rowIndex && cat.location.cell === cellIndex)} />}
             </View>
           ))}
         </View>
@@ -25,30 +29,5 @@ const App = () => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  row: {
-    flexDirection: 'row',
-  },
-  cell: {
-    width: 50,
-    height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'black',
-  },
-  emptyCell: {
-    backgroundColor: 'lightgray',
-  },
-  filledCell: {
-    backgroundColor: 'blue',
-  },
-});
 
 export default App;
