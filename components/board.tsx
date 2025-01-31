@@ -18,8 +18,8 @@ class Cell {
     this.isEmpty = isEmpty;
     const totalRowWidth = (row + 1) * cellSize;
     const rowOffset = totalRowWidth / 2;
-    this.absoluteX = (cell * cellSize) - rowOffset + (cellSize / 2);
-    this.absoluteY = row * cellSize + (cellSize / 2);
+    this.absoluteX = (cell * cellSize) - rowOffset;
+    this.absoluteY = row * cellSize;
   }
 
   getCenter(cellSize: number) {

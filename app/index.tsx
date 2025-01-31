@@ -25,8 +25,12 @@ const App = () => {
 
   board.cells.forEach((row) => {
     row.forEach((cell) => {
-      console.log(cell.row, cell.cell, cell.getCenter(cellSize));
+      console.log("Cells!", cell.row, cell.cell, cell.getCenter(cellSize));
     });
+  });
+
+  cats.forEach((cat) => {
+    console.log("Cats!",cat.location.row, cat.location.cell, cat.location.getCenter(cellSize));
   });
 
 
