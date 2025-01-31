@@ -15,9 +15,9 @@ export const GameContext = createContext({
 });
 
 const App = () => {
-  const board = new Board(5); // Example with 5 rows
+  const board = new Board(5);
   const cats = board.createCats();
-  const cellSize = 125; // Define the cell size, adjust as needed
+  const cellSize = 125; 
 
   const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
   const [catId, setCatId] = useState(0);
