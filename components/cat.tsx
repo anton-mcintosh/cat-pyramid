@@ -1,7 +1,7 @@
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useContext } from 'react';
 import { Text, View } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming, runOnJS } from 'react-native-reanimated';
 import { styles } from '../styles/styles';
 import { Cell } from '../components/board';
 import { GameContext } from '../app/index';
@@ -26,6 +26,37 @@ class Cat {
   }
 }
 
+export function CatComponent(cat: Cat, cellSize: number) {
+  const translationX = useSharedValue(0);
+  const translationY = useSharedValue(0);
+  const prevTranslationX = useSharedValue(0);
+  const prevTranslationY = useSharedValue(0);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translationX.value },
+                { translateY: translationY.value },
+    ],
+  }));
+
+  const pan = Gesture.Pan()
+    .onStart(() => {
+      prevTranslationX.value = translationX.value;
+      prevTranslationY.value = translationY.value;
+    })
+
+    .onUpdate((event) => {
+      translationX.value = prevTranslationX.value + event.translationX; 
+      translationY.value = prevTranslationY.value + event.translationY;
+  })
+  .runOnJS(true);
+
+  return (
+    <GestureDetector gesture={pan}>
+      <Animated.View style={[styles.cat, animatedStyle]} />
+    </GestureDetector>
+  );
+}
+/*
 interface CatComponentProps {
   cat: Cat;
   cellSize: number;
@@ -108,5 +139,5 @@ export function CatComponent({ cat, cellSize }: CatComponentProps) {
     </GestureDetector>
   );
 }
-
+*/
 export default Cat;
