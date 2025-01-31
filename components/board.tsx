@@ -7,18 +7,25 @@ import Cat from '../components/cat'
 class Cell {
   row: number;
   cell: number;
+  center: number;
   isEmpty: boolean;
+  absoluteX: number;
+  absoluteY: number;
 
-  constructor(row: number, cell: number, isEmpty: boolean) {
+  constructor(row: number, cell: number, isEmpty: boolean, cellSize: number) {
     this.row = row;
     this.cell = cell;
     this.isEmpty = isEmpty;
+    const totalRowWidth = (row + 1) * cellSize;
+    const rowOffset = totalRowWidth / 2;
+    this.absoluteX = (cell * cellSize) - rowOffset + (cellSize / 2);
+    this.absoluteY = row * cellSize + (cellSize / 2);
   }
 
-  getCenter(cellSize) {
+  getCenter(cellSize: number) {
     return {
-      x: this.col * cellSize + cellSize / 2,
-      y: this.row * cellSize + cellSize /2
+      x: this.absoluteX + cellSize / 2,
+      y: this.absoluteY + cellSize /2
     };
   }
 
@@ -27,9 +34,9 @@ class Cell {
 class Board {
   cells: Cell[][];
 
-  constructor(rows: number) {
+  constructor(rows: number, cellSize: number) {
     this.cells = [];
-    this.initializeCells(rows);
+    this.initializeCells(rows, cellSize);
   }
 
   addCat(cat: Cat) {
@@ -53,7 +60,7 @@ class Board {
     }
     return cats;
   }
-  private initializeCells(rows: number) {
+  private initializeCells(rows: number, cellSize: number) {
     let emptyCells: Cell[] = [];
     let randCell = randomCell(rows);
     emptyCells.push(randCell);
@@ -61,9 +68,9 @@ class Board {
       const row: Cell[] = [];
       for (let j = 0; j < i + 1; j++) {
         if (randCell.row === i && randCell.cell === j) {
-          row.push(new Cell(i, j, true));
+          row.push(new Cell(i, j, true, cellSize));
         } else {
-          row.push(new Cell(i, j, false));
+          row.push(new Cell(i, j, false, cellSize));
         }
       }
       this.cells.push(row);

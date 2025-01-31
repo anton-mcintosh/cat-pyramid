@@ -5,6 +5,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming, run
 import { styles } from '../styles/styles';
 import { Cell } from '../components/board';
 import { GameContext } from '../app/index';
+import { findTarget } from '../utils/target-cell'
 
 class Cat {
   id: number;
@@ -16,6 +17,10 @@ class Cat {
     this.location = location;
     this.neighbors = neighbors;
   }
+  
+  getLocation() {
+    return this.location;
+  }
 
   updateLocation(newLocation: Cell) {
     this.location = newLocation;
@@ -26,11 +31,15 @@ class Cat {
   }
 }
 
-export function CatComponent(cat: Cat, cellSize: number) {
+export function CatMovement({ cat, cellSize, board }: {cat: Cat, cellSize: number, board: Board}) {
+  const initialCenter = cat.location.getCenter(cellSize);
   const translationX = useSharedValue(0);
   const translationY = useSharedValue(0);
   const prevTranslationX = useSharedValue(0);
   const prevTranslationY = useSharedValue(0);
+  const absoluteX = useSharedValue(initialCenter.x);
+  const absoluteY = useSharedValue(initialCenter.y);
+
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translationX.value },
@@ -38,15 +47,33 @@ export function CatComponent(cat: Cat, cellSize: number) {
     ],
   }));
 
+  const { setCatId } = useContext(GameContext);
+
   const pan = Gesture.Pan()
     .onStart(() => {
       prevTranslationX.value = translationX.value;
       prevTranslationY.value = translationY.value;
+      setCatId(cat.Id);
     })
 
     .onUpdate((event) => {
       translationX.value = prevTranslationX.value + event.translationX; 
       translationY.value = prevTranslationY.value + event.translationY;
+      absoluteX.value = initialCenter.x + translationX.value;
+      absoluteY.value = initialCenter.y + translationY.value;
+  })
+    .onEnd(() => {
+      const [targetRow, targetCell] = findTarget(absoluteX.value, absoluteY.value, cellSize);
+      console.log("target cell: ", targetCell);
+      const targetBoardCell = board.cells[targetRow][targetCell];
+      const targetCenter = targetBoardCell.getCenter(cellSize);
+      translationX.value = withSpring(targetCenter.x - initialCenter.x);
+      translationY.value = withSpring(targetCenter.y - initialCenter.y);
+      cat.updateLocation(targetBoardCell);
+
+      console.log("Snapping to coords: ", targetCenter.x, targetCenter.y);
+      console.log("Actual cell center: ", targetBoardCell.row, targetBoardCell.cell);
+      
   })
   .runOnJS(true);
 

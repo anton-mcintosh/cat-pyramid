@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import { Cell } from '../components/board';
 import Board from '../components/board';
-import { Cat, CatComponent } from '../components/cat';
+import { Cat, CatMovement } from '../components/cat';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from '../styles/styles';
 import { StatsDisplay } from '../components/stats';
@@ -14,13 +14,20 @@ export const GameContext = createContext({
   setCatId: (id: number) => {}
 });
 
+
 const App = () => {
-  const board = new Board(5);
-  const cats = board.createCats();
   const cellSize = 125; 
+  const board = new Board(5, cellSize);
+  const cats = board.createCats();
 
   const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
   const [catId, setCatId] = useState(0);
+
+  board.cells.forEach((row) => {
+    row.forEach((cell) => {
+      console.log(cell.row, cell.cell, cell.getCenter(cellSize));
+    });
+  });
 
 
   return (
@@ -37,9 +44,10 @@ const App = () => {
               ]}
             >
               {cell.isEmpty ? null : (
-                <CatComponent
+                <CatMovement
                   cat={cats.find(cat => cat.location.row === rowIndex && cat.location.cell === cellIndex)}
                   cellSize={cellSize}
+                  board={board}
                 />
               )}
             </View>
