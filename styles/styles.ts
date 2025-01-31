@@ -28,6 +28,28 @@ export const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: 'blue',
     alignSelf: 'center',
+  },
+  catID: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
+    alignSelf: 'center',
+  },
+  mainContainer: {
+    flex: 1,
+    width: '100%',
+  },
+  statsContainer: {
+    padding: 16,
+    backgroundColor: '#f5f5f5',
+    borderTopWidth: 1,
+    borderColor: '#ddd',
+    alignItems: 'center',
+    width: '100%',
+  },
+  statsBox: {
+    width: '100%',
+    alignItems: 'center',
   }
 });
 

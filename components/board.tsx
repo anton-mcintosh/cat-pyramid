@@ -21,9 +21,6 @@ class Cell {
       y: this.row * cellSize + cellSize /2
     };
   }
-  static fromPosition(row: number, col: number): Cell {
-    return new Cell(row, col);
-  }
 
 }
 
@@ -42,13 +39,15 @@ class Board {
     }
   }
   createCats() {
+    let id = 1;
     const cats: Cat[] = [];
     for (let i = 0; i < this.cells.length; i++) {
       for (let j = 0; j < this.cells[i].length; j++) {
         if (!this.cells[i][j].isEmpty) {
-          const cat = new Cat(this.cells[i][j], []);
+          const cat = new Cat(this.cells[i][j], [], id);
           cats.push(cat);
           this.addCat(cat);
+          id += 1;
         }
       }
     }
